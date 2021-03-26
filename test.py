@@ -24,7 +24,7 @@ import grovepi
 import subprocess
 import math
 import argparse
-from neopixel import *
+from rpi_ws281x  import *
 
 
 #analog sensor port number
@@ -108,16 +108,18 @@ if __name__ == '__main__':
 	last_read_sensor=last_pic_time= int(time.time())
 	try:
 		while True:
+			grovepi.digitalWrite(green_led, 0)
 			led_strip(strip, 1)
-			print "LED strip switched on\n"
+			print ("LED strip switched on\n")
 			grovepi.digitalWrite(motor,1)
-			print "Motor turned on\n"
+			print ("Motor turned on\n")
 			take_picture()
-			print "Picture taken\n"
+			print ("Picture taken\n")
 			[moisture,light,temp,humidity]=read_sensor()
-			print(("***DATA***\nMoisture: %d\nLight: %d\nTemp: %.2f\nHumidity:%.2f %%\n" %(moisture,light,temp,humidity)))
+			print("***DATA***\nMoisture: %d\nLight: %d\nTemp: %.2f\nHumidity:%.2f %%\n" %(moisture,light,temp,humidity))
 			
 	except KeyboardInterrupt:
 		print("\nSystem stopped\n")
 		grovepi.digitalWrite(green_led, 0)
+		grovepi.digitalWrite(motor,0)
 		led_strip(strip, 0)
