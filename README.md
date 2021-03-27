@@ -8,10 +8,12 @@ Prerequisites:
 - A WS2812 LED stripe
 
 /!\ Disclaimer/!\
-I have done some re-used code from DexterIndustries plant_monitoring example and from the openclassroom.com HTML/CSS tutorial. Thank you !
+I have done some "code re-use" from DexterIndustries plant_monitoring example and from the openclassroom.com HTML/CSS tutorial. Thank you !
 Feel free to visit their amazing work:
 - https://github.com/DexterInd/GrovePi/
 - https://openclassrooms.com/fr/courses/1603881-apprenez-a-creer-votre-site-web-avec-html5-et-css3/
+
+And this tutorial from Instructable was a source of inspiration as well: https://www.instructables.com/Raspberry-Pi-Powered-IOT-Garden/
 
 How to install the HapPy Basil smart garden:
 1) Install Raspbian
