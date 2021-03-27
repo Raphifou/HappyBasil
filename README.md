@@ -24,4 +24,4 @@ How to install the HapPy Basil smart garden:
 6) PHP script and web interface UNDER DEV.
 
 
-/!\ This project works in local ! I am a beginner regarding web server development and network security. So, if you want to extand you HapPy Basil in the world wide web make sure to securize you web server /!\
+/!\ This project works in local ! I am a complete beginner regarding web server development and network security. So, if you want to expand you HapPy Basil in the world wide web make sure to securise your web server /!\
