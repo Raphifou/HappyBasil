@@ -2,10 +2,10 @@ import os
 import mariadb
 
 #Set up the database
-def	clear_db(light_state, motor_state, mode_state, pi_state):
+def	clear_db(light, motor, mode, pi):
   try:
-    statement = "INSERT INTO employees (first_name,last_name) VALUES (%s, %s)"
-    data = (first_name, last_name)
+    statement = "INSERT INTO variables (light_state, motor_state, mode_state, pi_state) VALUES (light, motor, mode, pi)"
+    data = (light, motor, mode, pi)
     cursor.execute(statement, data)
     connection.commit()
     print("Successfully added entry to database")
