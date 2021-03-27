@@ -19,36 +19,37 @@
 #
 
 import time
-from datetime import datetime
-import grovepi
-import subprocess
 import math
+import sys
+import subprocess
 import argparse
-from neopixel import *
+mport datetime
 
+import mariadb
+import grovepi
+from rpi_ws281x import *
 
 #analog sensor port number
-moisture_sensor			= 1
-light_sensor			= 2
+moisture_sensor		= 1
+light_sensor		= 2
 
 #digital sensor
 temp_humidity_sensor	= 2
-motor					= 4
-green_led				= 3
+motor			= 4
+green_led		= 3
 
 #temp_humidity_sensor type
-blue	= 0
-white 	= 1
+blue			= 0
+white 			= 1
 
 #variables
 watered = False
 
 #timings
-#test 
-#time_for_sensor		= 4		#  4 seconds
+
+#time_for_sensor		= 4	#  4 seconds
 #time_for_picture		= 12	# 12 seconds
 
-#final
 time_for_sensor			= 1*60*60	#1hr
 time_for_picture		= 8*60*60	#8hr
 time_to_sleep			= 1
@@ -107,6 +108,14 @@ def take_picture():
 	except:
 		print("Camera problem,please check the camera connections and settings")
 
+#Clear database
+def clearDB(cursor):
+	cursor.execute("INSERT INTO basilDB (first_name,last_name) VALUES (?, ?)", (first_name, last_name))
+	cursor.execute("INSERT INTO basilDB (first_name,last_name) VALUES (?, ?)", (first_name, last_name))
+	cursor.execute("INSERT INTO basilDB (first_name,last_name) VALUES (?, ?)", (first_name, last_name))
+	cursor.execute("INSERT INTO basilDB (first_name,last_name) VALUES (?, ?)", (first_name, last_name))
+	
+
 # To be UPDATED !!!
 def auto_mode():
     #If the time is in between an interval of +- 15 mins, while the moisture level < thresh keep motor running, else turn off motor
@@ -138,25 +147,49 @@ def auto_mode():
 # Main program logic follows:
 if __name__ == '__main__':
 	print ('Press Ctrl-C to quit.')
+	# Connect to MariaDB Platform
+	try:
+	    conn = mariadb.connect(
+		user="db_user",
+		password="db_user_passwd",
+		host="192.0.2.1",
+		port=3306,
+		database="basilDB"
+	    )
+	except mariadb.Error as e:
+	    print(f"Error connecting to MariaDB Platform: {e}")
+	    sys.exit(1)
+	# Get Cursor
+	cur = conn.cursor()
+	#Set up the database
+	clearDB()
 	
 	# Create NeoPixel object with appropriate configuration.
 	strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
-    # Intialize the library (must be called once before other functions).
+	# Intialize the library (must be called once before other functions).
 	strip.begin()	
 	
 	#Save the initial time, we will use this to find out when it is time to take a picture or save a reading
 	last_read_sensor=last_pic_time= int(time.time())
+	
+	#Loop
 	try:
 		while True:
 			curr_time_sec=int(time.time())
 			grovepi.digitalWrite(green_led, 1)
+			#Read the database
+			cur.execute("SELECT first_name,last_name FROM employees WHERE first_name=?", (some_name,)) 
+			cur.execute("SELECT first_name,last_name FROM employees WHERE first_name=?", (some_name,)) 
+			cur.execute("SELECT first_name,last_name FROM employees WHERE first_name=?", (some_name,)) 
+			cur.execute("SELECT first_name,last_name FROM employees WHERE first_name=?", (some_name,)) 
 			#Variables
-			light_state = 0
-			motor_state = 0
-			#update 	= 0
-			pi_state 	= 0
+			#light_state	= 0
+			#motor_state	= 0
+			#mode_state	= 0
+			#pi_state	= 0
 			#print light_state
 			#print motor_state
+			#print mode_state
 			#print pi_state
 			
 			#Data
@@ -195,17 +228,21 @@ if __name__ == '__main__':
 				light = 100*light/1023
 				moisture = 100 - (100*moisture/1023)
 				print("Updating data...\n")
-				#Uptade the database
-				# TO DO
 				# If any reading is a bad reading, skip the loop and try again
 				if moisture==-1:
 					print("Bad reading")
 					time.sleep(1)
 					continue
-					
 				curr_time = time.strftime("%Y-%m-%d:%H-%M-%S")
 				print(("Time:%s\nMoisture: %d\nLight: %d\nTemp: %.2f\nHumidity:%.2f %%\n" %(curr_time,moisture,light,temp,humidity)))
-			
+				#####################
+				#Uptade the database#
+				#####################
+				cursor.execute("INSERT INTO basilDB (first_name,last_name) VALUES (?, ?)", (first_name, last_name))
+				cursor.execute("INSERT INTO basilDB (first_name,last_name) VALUES (?, ?)", (first_name, last_name))
+				cursor.execute("INSERT INTO basilDB (first_name,last_name) VALUES (?, ?)", (first_name, last_name))
+				cursor.execute("INSERT INTO basilDB (first_name,last_name) VALUES (?, ?)", (first_name, last_name))
+				
 				# Save the sensors value in a CSV file
 				f=open(log_file,'a')
 				f.write("%s,%d,%d,%.2f,%.2f;\n" %(curr_time,moisture,light,temp,humidity))
