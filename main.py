@@ -28,6 +28,7 @@ mport datetime
 import mariadb
 import grovepi
 from rpi_ws281x import *
+from my_database import *
 
 #analog sensor port number
 moisture_sensor		= 1
