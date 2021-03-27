@@ -17,7 +17,7 @@
 #	
 # The GrovePi connects the Raspberry Pi and Grove sensors.  You can learn more about GrovePi here:  http://www.dexterindustries.com/GrovePi
 #
-
+import os
 import time
 import math
 import sys
@@ -107,15 +107,7 @@ def take_picture():
 		print("Picture taken\n------------>\n")
 	except:
 		print("Camera problem,please check the camera connections and settings")
-
-#Clear database
-def clearDB(cursor):
-	cursor.execute("INSERT INTO basilDB (first_name,last_name) VALUES (?, ?)", (first_name, last_name))
-	cursor.execute("INSERT INTO basilDB (first_name,last_name) VALUES (?, ?)", (first_name, last_name))
-	cursor.execute("INSERT INTO basilDB (first_name,last_name) VALUES (?, ?)", (first_name, last_name))
-	cursor.execute("INSERT INTO basilDB (first_name,last_name) VALUES (?, ?)", (first_name, last_name))
-	
-
+		
 # To be UPDATED !!!
 def auto_mode():
     #If the time is in between an interval of +- 15 mins, while the moisture level < thresh keep motor running, else turn off motor
@@ -146,77 +138,82 @@ def auto_mode():
 			
 # Main program logic follows:
 if __name__ == '__main__':
-	print ('Press Ctrl-C to quit.')
+	print ("************************\n")
+	print ("****HapPy Basil V0.1****\n)
+	print ("************************\n")
+	print ("Press Ctrl-C to quit.")
 	# Connect to MariaDB Platform
+	print ("Connecting to the database....................")
+	username = os.environ.get("username")
+	password = os.environ.get("password")
 	try:
-	    conn = mariadb.connect(
-		user="db_user",
-		password="db_user_passwd",
-		host="192.0.2.1",
+	conn = mariadb.connect(
+		user=username,
+		password=password,
+		host="localhost",
 		port=3306,
-		database="basilDB"
-	    )
-	except mariadb.Error as e:
-	    print(f"Error connecting to MariaDB Platform: {e}")
-	    sys.exit(1)
+		database="happybasil_db"
+	)
+	except mariadb.Error as e
+	       print (f"Error connecting to MariaDB Platform: {e}")
+	       sys.exit(1)
+	print ("Done\n")
 	# Get Cursor
-	cur = conn.cursor()
-	#Set up the database
-	clearDB()
-	
+  	cur = conn.cursor()
+	#Initialize the database
+	print ("Setting up the database....................")
+	light_state	= 0
+	motor_state	= 0
+	mode_state	= 0
+	pi_state	= 0
+	clear_db(light_state, motor_state, mode_state, pi_state)
+	print ("Done\n")
+	       
 	# Create NeoPixel object with appropriate configuration.
+	print ("Setting up the LEDs....................")
 	strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
 	# Intialize the library (must be called once before other functions).
 	strip.begin()	
-	
+	print ("Done\n")
+	       
 	#Save the initial time, we will use this to find out when it is time to take a picture or save a reading
 	last_read_sensor=last_pic_time= int(time.time())
-	
-	#Loop
+	print ("****HapPy Basil is now read !****\n")
+	       
+	#Main loop
 	try:
 		while True:
 			curr_time_sec=int(time.time())
 			grovepi.digitalWrite(green_led, 1)
 			#Read the database
-			cur.execute("SELECT first_name,last_name FROM employees WHERE first_name=?", (some_name,)) 
-			cur.execute("SELECT first_name,last_name FROM employees WHERE first_name=?", (some_name,)) 
-			cur.execute("SELECT first_name,last_name FROM employees WHERE first_name=?", (some_name,)) 
-			cur.execute("SELECT first_name,last_name FROM employees WHERE first_name=?", (some_name,)) 
-			#Variables
-			#light_state	= 0
-			#motor_state	= 0
-			#mode_state	= 0
-			#pi_state	= 0
+			read_db(light_state, motor_state,mode_state,pi_state)
 			#print light_state
 			#print motor_state
 			#print mode_state
 			#print pi_state
 			
 			#Data
-			if (pi_state == unicode("0")):
+			if (pi_state == 0):
 				led_strip(strip, 0)
 				grovepi.digitalWrite(green_led, 0)
 				grovepi.digitalWrite(motor,0)
 				break
 				#To be UPDATED !!!
 			#LED
-			if (light_state == unicode("1")):
+			if (light_state == 1):
 				#switch on the LED strip
 				print ("LED strip switched on\n")
 				led_strip(strip, 1)
-			elif (light_state == unicode("0")):
+			elif (light_state == 0):
 				#switch off the LED strip
 				print("LED strip switched off\n")
 				led_strip(strip, 0)
 			#Motor	
-			if (motor_state == unicode("1")):
+			if (motor_state == 1):
 				#turn on motor
 				print ("Motor turned on\n")
 				grovepi.digitalWrite(motor,1)
-			elif (motor_state == unicode("2")):
-				print("Pump is now in auto mode !\n")
-				auto_mode()
-			else:
+			elif (motor_state == 0):
 				#turn off motor
 				print("Motor turned off\n")
 				grovepi.digitalWrite(motor,0)
@@ -236,13 +233,10 @@ if __name__ == '__main__':
 				curr_time = time.strftime("%Y-%m-%d:%H-%M-%S")
 				print(("Time:%s\nMoisture: %d\nLight: %d\nTemp: %.2f\nHumidity:%.2f %%\n" %(curr_time,moisture,light,temp,humidity)))
 				#####################
-				#Uptade the database#
+				#Updating the database#
 				#####################
-				cursor.execute("INSERT INTO basilDB (first_name,last_name) VALUES (?, ?)", (first_name, last_name))
-				cursor.execute("INSERT INTO basilDB (first_name,last_name) VALUES (?, ?)", (first_name, last_name))
-				cursor.execute("INSERT INTO basilDB (first_name,last_name) VALUES (?, ?)", (first_name, last_name))
-				cursor.execute("INSERT INTO basilDB (first_name,last_name) VALUES (?, ?)", (first_name, last_name))
-				
+				update_db(light,temp,humidity,moisture,curr_time,curr_date)
+	       			print ("Database updated !)
 				# Save the sensors value in a CSV file
 				f=open(log_file,'a')
 				f.write("%s,%d,%d,%.2f,%.2f;\n" %(curr_time,moisture,light,temp,humidity))
@@ -257,6 +251,12 @@ if __name__ == '__main__':
 				take_picture()
 				last_pic_time=curr_time_sec
 
+			#Check the mode_state value
+			if (mode_state = 1):
+				auto_mode()
+			    	print("HapPy Basil is now in auto mode !\n")
+			elif (mode_state = 0):
+				print("HapPy Basil is now in manual mode !\n")
 			#Slow down the loop
 			time.sleep(time_to_sleep)
 			
