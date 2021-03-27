@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 #
-#	Smart Garden Project V1.0.2
-#	*	Reads the data from moisture, light, temperature and humidity sensor 
+#	HapPy Basil V0.1
+#	* Py :	Reads the data from moisture, light, temperature and humidity sensor 
 #		and takes pictures from the Pi camera periodically and logs them
-#	* IoT: All the data are saved in a DB and sent to a website: ?
+#	* IoT: All the data are saved in a DB and sent to a web interface
 #	*	Sensor Connections on the GrovePi:
 #			-> Grove Moisture sensor	- Port A1
 #			-> Grove light sensor		- Port A2
@@ -17,6 +17,7 @@
 #	
 # The GrovePi connects the Raspberry Pi and Grove sensors.  You can learn more about GrovePi here:  http://www.dexterindustries.com/GrovePi
 #
+#
 import os
 import time
 import math
@@ -28,7 +29,6 @@ mport datetime
 import mariadb
 import grovepi
 from rpi_ws281x import *
-from my_database import *
 
 #analog sensor port number
 moisture_sensor		= 1
@@ -47,10 +47,10 @@ white 			= 1
 watered = False
 
 #timings
-
+#for debug
 #time_for_sensor		= 4	#  4 seconds
 #time_for_picture		= 12	# 12 seconds
-
+#for script
 time_for_sensor			= 1*60*60	#1hr
 time_for_picture		= 8*60*60	#8hr
 time_to_sleep			= 1
@@ -134,8 +134,8 @@ def auto_mode():
 				else:
 					grovepi.digitalWrite(motor,1)
     	else:
-			watered = False
-			grovepi.digitalWrite(motor,0)
+		watered = False
+		grovepi.digitalWrite(motor,0)
 			
 # Main program logic follows:
 if __name__ == '__main__':
@@ -148,13 +148,13 @@ if __name__ == '__main__':
 	username = os.environ.get("username")
 	password = os.environ.get("password")
 	try:
-	conn = mariadb.connect(
-		user=username,
-		password=password,
-		host="localhost",
-		port=3306,
-		database="happybasil_db"
-	)
+	       conn = mariadb.connect(
+		       user=username,
+		       password=password,
+		       host="localhost",
+		       port=3306,
+		       database="happybasil_db"
+	       )
 	except mariadb.Error as e
 	       print (f"Error connecting to MariaDB Platform: {e}")
 	       sys.exit(1)
@@ -167,7 +167,7 @@ if __name__ == '__main__':
 	motor_state	= 0
 	mode_state	= 0
 	pi_state	= 0
-	clear_db(light_state, motor_state, mode_state, pi_state)
+	cur.execute("REPLACE INTO variables VALUES (?, ?, ?, ?)",(contact_id, first_name, last_name, email)) #TODO
 	print ("Done\n")
 	       
 	# Create NeoPixel object with appropriate configuration.
@@ -236,7 +236,7 @@ if __name__ == '__main__':
 				#####################
 				#Updating the database#
 				#####################
-				update_db(light,temp,humidity,moisture,curr_time,curr_date)
+				cur.execute("UPDATE test.contacts SET last_name=? WHERE email=?",(last_name, email)) #TODO
 	       			print ("Database updated !)
 				# Save the sensors value in a CSV file
 				f=open(log_file,'a')
@@ -262,8 +262,11 @@ if __name__ == '__main__':
 			time.sleep(time_to_sleep)
 			
 	except KeyboardInterrupt:
-		print("\nSystem stopped\n")
 		grovepi.digitalWrite(green_led, 0)
 		grovepi.digitalWrite(motor,0)
 		led_strip(strip, 0)
+		# Close Connection
+		conn.close()
+		print("\nHapPy Basil turned off !\n")
+				     
 		
