@@ -1,11 +1,20 @@
 import sys
 import mariadb
 
+############################
+#In your terminal:         #
+#export username="username"#
+#export password="password"#
+############################
+
+username = os.environ.get("username")
+password = os.environ.get("password")
+
 # Instantiate Connection
 try:
   conn = mariadb.connect(
-      user="connpy_test",
-      password="passwd",
+      user="username",
+      password="password",
       host="localhost",
       port=3306)
 except mariadb.Error as e:
