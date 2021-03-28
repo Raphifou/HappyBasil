@@ -36,27 +36,48 @@
                     <a href="#" class="bouton_rouge">Update data <img src="images/flecheblanchedroite.png" alt="" /></a>
                 </div>
             </div>
-            
-            <section>
-                <article>
-                    <h1><img src="images/ico_engrenage.png" alt="Sensors" class="ico_categorie" />Garden Status</h1>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nec sagittis massa. Nulla facilisi. Cras id arcu lorem, et semper purus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Duis vel enim mi, in lobortis sem. Vestibulum luctus elit eu libero ultrices id fermentum sem sagittis. Nulla imperdiet mauris sed sapien dignissim id aliquam est aliquam. Maecenas non odio ipsum, a elementum nisi. Mauris non erat eu erat placerat convallis. Mauris in pretium urna. Cras laoreet molestie odio, consequat consequat velit commodo eu. Integer vitae lectus ac nunc posuere pellentesque non at eros. Suspendisse non lectus lorem.</p>
-                    <p>Vivamus sed libero nec mauris pulvinar facilisis ut non sem. Quisque mollis ullamcorper diam vel faucibus. Vestibulum sollicitudin facilisis feugiat. Nulla euismod sodales hendrerit. Donec quis orci arcu. Vivamus fermentum magna a erat ullamcorper dignissim pretium nunc aliquam. Aenean pulvinar condimentum enim a dignissim. Vivamus sit amet lectus at ante adipiscing adipiscing eget vitae felis. In at fringilla est. Cras id velit ut magna rutrum commodo. Etiam ut scelerisque purus. Duis risus elit, venenatis vel rutrum in, imperdiet in quam. Sed vestibulum, libero ut bibendum consectetur, eros ipsum ultrices nisl, in rutrum diam augue non tortor. Fusce nec massa et risus dapibus aliquam vitae nec diam.</p>
-                    <p>Phasellus ligula massa, congue ac vulputate non, dignissim at augue. Sed auctor fringilla quam quis porttitor. Praesent vitae dignissim magna. Pellentesque quis sem purus, vel elementum mi. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Maecenas consectetur euismod urna. In hac habitasse platea dictumst. Quisque tincidunt porttitor vestibulum. Ut iaculis, lacus at molestie lacinia, ipsum mi adipiscing ligula, vel mollis sem risus eu lectus. Nunc elit quam, rutrum ut dignissim sit amet, egestas at sem.</p>
-                </article>
-                <aside>
-                    <h1>Healt status</h1>
+            <h1><img src="images/garden_status.png" alt="Sensors" class="ico_categorie" />Garden Status</h1>
+            <div id = "garden_status">
+				
+                <table>
+						<tr>
+						<td id="light">
+							
+							<p><img src="images/sun.png" alt="Sun" /> Luminosity: ?</p>
+						</td>
+						<td id="temp">
+							
+							<p><img src="images/thermo.png" alt="Thermometer" /> Temperature: ?</p>
+						</td>
+						</tr>
+						<tr>
+						<td id="humidity">
 
-                    <p id="health_status"><img src="images/sad.jpg" alt="Smiley" /></p>
-                    <p>Il faut ajouter des boutons.</p>
-                    <p>Mode auto, mode manuel, LED, pompe /!\</p>
-                </aside>
-            </section>
+							<p><img src="images/fog.png" alt="Fog" /> Humidity: ?</p>
+						</td>
+						<td id="moisture">
+							
+							<p><img src="images/humidity.png" alt="Drop" /> Moisture: ?</p>
+						</td>
+						</tr>
+                </table>
+				 <aside>
+					<h1>Control Panel</h1>
+
+					<p id="health_status"><img src="images/cold1.png" alt="Smiley" /></p>
+					<input class="styled" type="button" value="AUTO">
+					<input class="styled" type="button" value="MANUAL">
+					<input class="styled" type="button" value="LIGHT">
+					<input class="styled" type="button" value="PUMP">
+					<input class="styled" type="button" value="OFF">
+				</aside>
+			</div>
+
             
             <footer>
                 <div id="update">
                     <h1>LAST UPDATES</h1>
-                    <p>DATE : xx/xx/xx</p>
+                    <p>Date : xx/xx/xx</p>
                     <p>Time : xx:xx:xx</p>
                 </div>
                 <div id="mes_photos">
@@ -74,8 +95,8 @@
                         </ul>
                         <ul>
                             <li><a href="#">Mon petit coin vert</a></li>
-                            <li><a href="#">TBD</a></li>
-                            <li><a href="#">TBD</a></li>
+                            <li>Icon by <a href="https://freeicons.io/profile/3063">Oscar EstMont</a> on <a href="https://freeicons.io">freeicons.io</a></li>
+                            <li>Icon by <a href="https://freeicons.io/profile/823">Muhammad Haq</a> on <a href="https://freeicons.io">freeicons.io</a></li>
                             <li><a href="#">TBD</a></li>
                         </ul>
                     </div>
