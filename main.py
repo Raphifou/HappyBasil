@@ -29,6 +29,7 @@ import datetime
 import mariadb
 import grovepi
 from rpi_ws281x import *
+from getpass import getpass
 
 #analog sensor port number
 moisture_sensor		= 1
@@ -44,7 +45,6 @@ blue			= 0
 white 			= 1
 
 #variables
-data 		= []
 watered 	= 0
 light_state	= 0
 motor_state	= 0
@@ -57,12 +57,12 @@ moisture 	= 0.0
 
 #timings
 #for debug
-#time_for_sensor		= 4	#  4 seconds
-#time_for_picture		= 12	# 12 seconds
+time_for_sensor		= 4	#  4 seconds
+time_for_picture	= 12	# 12 seconds
 #for script
-time_for_sensor			= 1*60*60	#1hr
-time_for_picture		= 8*60*60	#8hr
-time_to_sleep			= 1
+#time_for_sensor	= 1*60*60	#1hr
+#time_for_picture	= 8*60*60	#8hr
+time_to_sleep		= 1
 
 #logfile
 log_file="plant_monitor_log.csv"
@@ -158,23 +158,25 @@ if __name__ == '__main__':
 	#password = os.environ.get("password")
 	try:
 	       conn = mariadb.connect(
-		       user="root",
-		       password="garden",
-		       host="localhost",
-		       port=3306,
-		       database="happybasil_db"
+				user=input("Enter your username: "),
+				password=getpass("Enter your username: "),
+		        host="localhost",
+		        port=3306,
+		        database="happybasil_db",
+		        autocommit=True
 	       )
 	except mariadb.Error as e:
 	       print (f"Error connecting to MariaDB Platform: {e}")
 	       sys.exit(1)
 	print ("Done\n")
 	# Get Cursor
+	conn.autocommit = True
 	cur = conn.cursor()
 	#Initialize the database
 	print ("Setting up the database....................")
-	cur.execute("UPDATE data SET value = \"0\"")
+	cur.execute("UPDATE data SET value = '0'")
 	cur.execute("UPDATE data SET value = %s WHERE variable = %s ", ("1","pi_state"))
-	conn.commit() 
+	#conn.commit() 
 	print ("Done\n")
 	       
 	# Create NeoPixel object with appropriate configuration.
@@ -191,34 +193,36 @@ if __name__ == '__main__':
 	#Main loop
 	try:
 		while True:
-			curr_time_sec=int(time.time())
-			grovepi.digitalWrite(green_led, 1)
-			#Read the databases
-			cur.execute("SELECT variable, value FROM data")
-			# DEBUG
-			db = []
-			for (variables, values) in cur:
-				db.append(f"{variables} {values}")
-			print("\n".join(db))
-	       	# DEBUG
+			curr_time_sec=int(time.time()) #
+			grovepi.digitalWrite(green_led, 1) #I am alive ;)
+			
+			#Read the database
+			#data = []
+			cur.execute("SELECT value FROM data")
+			data = cur.fetchall()
+			#print(data)
+			data=[i[0] for i in data]
+			print (data)
+			light_state = data[0]
+			print(light_state)
 			#Data
-			if (pi_state == 0):
+			if (pi_state == "0"):
 				led_strip(strip, 0)
 				grovepi.digitalWrite(green_led, 0)
 				grovepi.digitalWrite(motor,0)
 				break
 				#To be UPDATED !!!
 			#LED
-			if (light_state == 1):
+			if (light_state == "1"):
 				#switch on the LED strip
 				print ("LED strip switched on\n")
 				led_strip(strip, 1)
-			elif (light_state == 0):
+			elif (light_state == "0"):
 				#switch off the LED strip
 				print("LED strip switched off\n")
 				led_strip(strip, 0)
 			#Motor	
-			if (motor_state == 1):
+			if (motor_state == "1"):
 				#turn on motor
 				print ("Motor turned on\n")
 				grovepi.digitalWrite(motor,1)
@@ -239,19 +243,27 @@ if __name__ == '__main__':
 					print("Bad reading")
 					time.sleep(1)
 					continue
-				curr_time = time.strftime("%Y-%m-%d:%H-%M-%S")
+				curr_time = time.strftime("%d/%m/%Y-%H:%M:%S")
 				print(("Time:%s\nMoisture: %d\nLight: %d\nTemp: %.2f\nHumidity:%.2f %%\n" %(curr_time,moisture,light,temp,humidity)))
 				#####################
 				#Updating the database#
 				#####################
-				cur.execute("UPDATE data SET value=%s WHERE variables=%s",(light, "light"))
-				cur.execute("UPDATE data SET value=%s WHERE variables=%s",(temp, "temp"))
-				cur.execute("UPDATE data SET value=%s WHERE variables=%s",(humidity, "humidity"))
-				cur.execute("UPDATE data SET value=%s WHERE variables=%s",(moisture, "moisture"))
+				light = str(light)
+				light = light[:4]
+				moisture = str(moisture)
+				moisture = moisture[:4]
+				mydate = time.strftime("%d/%m/%Y")
+				mytime = time.strftime("%H:%M:%S")
+				cur.execute("UPDATE data SET value=%s WHERE variable=%s",(light, "light"))
+				cur.execute("UPDATE data SET value=%s WHERE variable=%s",(temp, "temp"))
+				cur.execute("UPDATE data SET value=%s WHERE variable=%s",(humidity, "humidity"))
+				cur.execute("UPDATE data SET value=%s WHERE variable=%s",(moisture, "moisture"))
+				cur.execute("UPDATE data SET value=%s WHERE variable=%s",(mydate, "date"))
+				cur.execute("UPDATE data SET value=%s WHERE variable=%s",(mytime, "time"))
 				print ("Database updated !\n")
 				# Save the sensors value in a CSV file
 				f=open(log_file,'a')
-				f.write("%s,%d,%d,%.2f,%.2f;\n" %(curr_time,moisture,light,temp,humidity))
+				f.write("%s,%s,%d,%d,%s;\n" %(curr_time,light,temp,humidity,moisture))
 				f.close()
 				print("Logfile updated at %s \n" % curr_time)
 				
@@ -264,10 +276,10 @@ if __name__ == '__main__':
 				last_pic_time = curr_time_sec
 
 			#Check the mode_state value
-			if (mode_state == 1):
+			if (mode_state == "1"):
 				auto_mode()
 				print ("HapPy Basil is now in auto mode !\n")
-			elif (mode_state == 0):
+			elif (mode_state == "0"):
 				print("HapPy Basil is now in manual mode !\n")
 			#Slow down the loop
 			time.sleep(time_to_sleep)
