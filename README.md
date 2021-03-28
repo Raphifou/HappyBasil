@@ -1,4 +1,5 @@
 # HappyBasil
+V.0.1
 A plant monitoring system based on RPi, Python using a web interface.
 
 Prerequisites:
