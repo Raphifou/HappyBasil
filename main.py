@@ -44,7 +44,16 @@ blue			= 0
 white 			= 1
 
 #variables
-watered = False
+data 		= []
+watered 	= 0
+light_state	= 0
+motor_state	= 0
+mode_state	= 0
+pi_state	= 1
+light 		= 0.0
+temp  		= 0.0
+humidity 	= 0.0
+moisture 	= 0.0
 
 #timings
 #for debug
@@ -94,7 +103,7 @@ def read_sensor():
 		#Return -1 in case of bad temp/humidity sensor reading
 		if math.isnan(temp) or math.isnan(humidity):		#temp/humidity sensor sometimes gives nan
 			return [-1,-1,-1,-1]
-		return [moisture,light,temp,humidity]
+		return [light,temp,humidity,moisture]
 	#Return -1 in case of sensor error
 	except IOError as TypeError:
 			return [-1,-1,-1,-1]
@@ -109,7 +118,7 @@ def take_picture():
 	except:
 		print("Camera problem,please check the camera connections and settings")
 		
-# To be UPDATED !!!
+###### TO DO ######
 def auto_mode():
     #If the time is in between an interval of +- 15 mins, while the moisture level < thresh keep motor running, else turn off motor
 	thresh = 30
@@ -140,7 +149,7 @@ def auto_mode():
 # Main program logic follows:
 if __name__ == '__main__':
 	print ("************************\n")
-	print ("****HapPy Basil V0.1****\n)
+	print ("****HapPy Basil V.0.1****\n)
 	print ("************************\n")
 	print ("Press Ctrl-C to quit.")
 	# Connect to MariaDB Platform
@@ -163,11 +172,8 @@ if __name__ == '__main__':
   	cur = conn.cursor()
 	#Initialize the database
 	print ("Setting up the database....................")
-	light_state	= 0
-	motor_state	= 0
-	mode_state	= 0
-	pi_state	= 0
-	cur.execute("REPLACE INTO variables VALUES (?, ?, ?, ?)",(contact_id, first_name, last_name, email)) #TODO
+	cur.execute("UPDATES mydb SET values = ?", (0))
+	cur.execute("UPDATES mydb SET values = ? WHERE variables = pi_state ", (0)) 
 	print ("Done\n")
 	       
 	# Create NeoPixel object with appropriate configuration.
@@ -183,16 +189,16 @@ if __name__ == '__main__':
 	       
 	#Main loop
 	try:
-		while True:
-			curr_time_sec=int(time.time())
+	       while True:
+	       		curr_time_sec=int(time.time())
 			grovepi.digitalWrite(green_led, 1)
-			#Read the database
-			read_db(light_state, motor_state,mode_state,pi_state)
-			#print light_state
-			#print motor_state
-			#print mode_state
-			#print pi_state
-			
+			#Read the databases
+			cur.execute("SELECT variables, values FROM data")
+			# DEBUG
+			   for (variables, values) in cur:
+			     float_db.append(f"{variables} {values}")
+			print("\n".join(data))
+	       		# DEBUG
 			#Data
 			if (pi_state == 0):
 				led_strip(strip, 0)
@@ -222,7 +228,7 @@ if __name__ == '__main__':
 			# If it is time to take the sensor reading
 			if curr_time_sec-last_read_sensor>time_for_sensor:
 				#Sensor reading and variables updating
-				[moisture,light,temp,humidity]=read_sensor()
+				[light,temp,humidity,moisture]=read_sensor()
 				light = 100*light/1023
 				moisture = 100 - (100*moisture/1023)
 				print("Updating data...\n")
@@ -236,7 +242,10 @@ if __name__ == '__main__':
 				#####################
 				#Updating the database#
 				#####################
-				cur.execute("UPDATE test.contacts SET last_name=? WHERE email=?",(last_name, email)) #TODO
+				cur.execute("UPDATE data SET value=? WHERE variables=?",(light, "light"))
+				cur.execute("UPDATE data SET value=? WHERE variables=?",(temp, "temp"))
+				cur.execute("UPDATE data SET value=? WHERE variables=?",(humidity, "humidity"))
+				cur.execute("UPDATE data SET value=? WHERE variables=?",(moisture, "moisture"))
 	       			print ("Database updated !)
 				# Save the sensors value in a CSV file
 				f=open(log_file,'a')
@@ -248,9 +257,9 @@ if __name__ == '__main__':
 				last_read_sensor=curr_time_sec		
 
 			# If it is time to take the picture
-			if curr_time_sec-last_pic_time>time_for_picture:
+			if curr_time_sec-last_pic_time > time_for_picture:
 				take_picture()
-				last_pic_time=curr_time_sec
+				last_pic_time = curr_time_sec
 
 			#Check the mode_state value
 			if (mode_state = 1):
@@ -262,10 +271,11 @@ if __name__ == '__main__':
 			time.sleep(time_to_sleep)
 			
 	except KeyboardInterrupt:
+		# Turn off the the LED stripe and the pump
 		grovepi.digitalWrite(green_led, 0)
 		grovepi.digitalWrite(motor,0)
 		led_strip(strip, 0)
-		# Close Connection
+		# Close the database connection
 		conn.close()
 		print("\nHapPy Basil turned off !\n")
 				     
