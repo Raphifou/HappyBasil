@@ -21,7 +21,8 @@ How to install the HapPy Basil smart garden:
 3) Install the LAMP server package: sudo apt install apache2 php libapache2-mod-php mariadb-server php-mysql
 4) Set up an apache2 web server
 5) Set up the MariaDB database
-6) PHP script and web interface UNDER DEV.
+6) Launch the create_db.py
+7) PHP script and web interface UNDER DEV.
 
 
 /!\ This project works in local ! I am a complete beginner regarding web server development and network security. So, if you want to expand you HapPy Basil in the world wide web make sure to securise your web server /!\
