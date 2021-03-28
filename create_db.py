@@ -28,55 +28,57 @@ CREATE DATABASE happybasil_db;
 USE happybasil_db;
 
 CREATE TABLE data (
-variables CHAR(10),
-values CHAR(10)
+variables CHAR(20),
+value CHAR(20)
 );
 
 DESCRIBE data;
 
 INSERT INTO data
-(variables, values)
-VALUES('light_state', 0);
+(variables, value)
+value('light_state', '0');
 
 INSERT INTO data
-(variables, values)
-VALUES('motor_state', 0);
+(variable, value)
+value('motor_state', '0');
 
 INSERT INTO data
-(variables, values)
-VALUES('mode_state', 0);
+(variable, value)
+value('mode_state', '0');
 
 INSERT INTO data
-(variables, values)
-VALUES('pi_state', 0);
+(variable, value)
+value('pi_state', '1');
 
 INSERT INTO data
-(variables, values)
-VALUES('light', 0);
+(variable, value)
+value('light', '0');
 
 INSERT INTO data
-(variables, values)
-VALUES('temp', 0);
+(variable, value)
+value('temp', '0');
 
 INSERT INTO data
-(variables, values)
-VALUES('humidity', 0);
+(variable, value)
+value('humidity', '0');
 
 INSERT INTO data
-(variables, values)
-VALUES('moisture', 0);
+(variable, value)
+value('moisture', '0');
 
 INSERT INTO data
-(variables, values)
-VALUES('watered', 0);
+(variable, value)
+value('watered', '0');
 
 INSERT INTO data
-(variables, values)
-VALUES('date', 0);
+(variable, value)
+value('date', '0');
 
 INSERT INTO data
-(variables, values)
-VALUES('time', 0);
+(variable, value)
+value('time', '0');
+
+conn.commit()
 
 # Close Connection
 conn.close()

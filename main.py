@@ -24,7 +24,7 @@ import math
 import sys
 import subprocess
 import argparse
-mport datetime
+import datetime
 
 import mariadb
 import grovepi
@@ -142,38 +142,39 @@ def auto_mode():
 					break
 				else:
 					grovepi.digitalWrite(motor,1)
-    	else:
-		watered = False
-		grovepi.digitalWrite(motor,0)
+		else:
+			watered = False
+			grovepi.digitalWrite(motor,0)
 			
 # Main program logic follows:
 if __name__ == '__main__':
-	print ("************************\n")
-	print ("****HapPy Basil V.0.1****\n)
-	print ("************************\n")
-	print ("Press Ctrl-C to quit.")
+	print ("***************************\n")
+	print ("**** HapPy Basil V.0.1 ****\n")
+	print ("***************************\n")
+	print ("Press Ctrl-C to quit.\n")
 	# Connect to MariaDB Platform
 	print ("Connecting to the database....................")
-	username = os.environ.get("username")
-	password = os.environ.get("password")
+	#username = os.environ.get("username")
+	#password = os.environ.get("password")
 	try:
 	       conn = mariadb.connect(
-		       user=username,
-		       password=password,
+		       user="root",
+		       password="garden",
 		       host="localhost",
 		       port=3306,
 		       database="happybasil_db"
 	       )
-	except mariadb.Error as e
+	except mariadb.Error as e:
 	       print (f"Error connecting to MariaDB Platform: {e}")
 	       sys.exit(1)
 	print ("Done\n")
 	# Get Cursor
-  	cur = conn.cursor()
+	cur = conn.cursor()
 	#Initialize the database
 	print ("Setting up the database....................")
-	cur.execute("UPDATES mydb SET values = ?", (0))
-	cur.execute("UPDATES mydb SET values = ? WHERE variables = pi_state ", (0)) 
+	cur.execute("UPDATE data SET value = \"0\"")
+	cur.execute("UPDATE data SET value = %s WHERE variable = %s ", ("1","pi_state"))
+	conn.commit() 
 	print ("Done\n")
 	       
 	# Create NeoPixel object with appropriate configuration.
@@ -189,16 +190,17 @@ if __name__ == '__main__':
 	       
 	#Main loop
 	try:
-	       while True:
-	       		curr_time_sec=int(time.time())
+		while True:
+			curr_time_sec=int(time.time())
 			grovepi.digitalWrite(green_led, 1)
 			#Read the databases
-			cur.execute("SELECT variables, values FROM data")
+			cur.execute("SELECT variable, value FROM data")
 			# DEBUG
-			   for (variables, values) in cur:
-			     float_db.append(f"{variables} {values}")
-			print("\n".join(data))
-	       		# DEBUG
+			db = []
+			for (variables, values) in cur:
+				db.append(f"{variables} {values}")
+			print("\n".join(db))
+	       	# DEBUG
 			#Data
 			if (pi_state == 0):
 				led_strip(strip, 0)
@@ -242,11 +244,11 @@ if __name__ == '__main__':
 				#####################
 				#Updating the database#
 				#####################
-				cur.execute("UPDATE data SET value=? WHERE variables=?",(light, "light"))
-				cur.execute("UPDATE data SET value=? WHERE variables=?",(temp, "temp"))
-				cur.execute("UPDATE data SET value=? WHERE variables=?",(humidity, "humidity"))
-				cur.execute("UPDATE data SET value=? WHERE variables=?",(moisture, "moisture"))
-	       			print ("Database updated !)
+				cur.execute("UPDATE data SET value=%s WHERE variables=%s",(light, "light"))
+				cur.execute("UPDATE data SET value=%s WHERE variables=%s",(temp, "temp"))
+				cur.execute("UPDATE data SET value=%s WHERE variables=%s",(humidity, "humidity"))
+				cur.execute("UPDATE data SET value=%s WHERE variables=%s",(moisture, "moisture"))
+				print ("Database updated !\n")
 				# Save the sensors value in a CSV file
 				f=open(log_file,'a')
 				f.write("%s,%d,%d,%.2f,%.2f;\n" %(curr_time,moisture,light,temp,humidity))
@@ -262,10 +264,10 @@ if __name__ == '__main__':
 				last_pic_time = curr_time_sec
 
 			#Check the mode_state value
-			if (mode_state = 1):
+			if (mode_state == 1):
 				auto_mode()
-			    	print("HapPy Basil is now in auto mode !\n")
-			elif (mode_state = 0):
+				print ("HapPy Basil is now in auto mode !\n")
+			elif (mode_state == 0):
 				print("HapPy Basil is now in manual mode !\n")
 			#Slow down the loop
 			time.sleep(time_to_sleep)
