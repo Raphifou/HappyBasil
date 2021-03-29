@@ -1,47 +1,40 @@
 #!/usr/bin/env python3
-#
-#	Smart Garden Project V1.0.2
-#	*	Reads the data from moisture, light, temperature and humidity sensor 
-#		and takes pictures from the Pi camera periodically and logs them
-#	* IoT: All the data are saved in a DB and sent to a website: ?
+#CONNECTIONS:
 #	*	Sensor Connections on the GrovePi:
 #			-> Grove Moisture sensor	- Port A1
 #			-> Grove light sensor		- Port A2
 #			-> Grove DHT sensors		- Port D2
-#	* Pump and LED strip are connected :AUTO / MANUAL mode are availables
-#			-> LED strip				- GPIO 18
-#	*	Sensor Connections on the GrovePi:
-#			-> Relay					- Port D4
+#			-> Relay			- Port D4
+#	*	LED strip
+#			-> LED strip			- GPIO 18
 # NOTE:
 #	*	Make sure that the Pi camera is enabled and works. Directions here: https://www.raspberrypi.org/help/camera-module-setup/
-#	
-# The GrovePi connects the Raspberry Pi and Grove sensors.  You can learn more about GrovePi here:  http://www.dexterindustries.com/GrovePi
-#
+# 	*	The GrovePi connects the Raspberry Pi and Grove sensors.  You can learn more about GrovePi here:  http://www.dexterindustries.com/GrovePi
 
 import time
-from datetime import datetime
-import grovepi
+import datetime
 import subprocess
 import math
 import argparse
+
+import grovepi
 from rpi_ws281x  import *
 
-
 #analog sensor port number
-moisture_sensor			= 1
-light_sensor			= 2
+moisture_sensor		= 1
+light_sensor		= 2
 
 #digital sensor
 temp_humidity_sensor	= 2
-motor					= 4
-green_led				= 3
+motor			= 4
+green_led		= 3
 
 #temp_humidity_sensor type
-blue	= 0
-white 	= 1
+blue			= 0
+white 			= 1
 
 #loop
-time_to_sleep			= 5
+time_to_sleep		= 1
 
 
 # LED strip configuration:
@@ -101,14 +94,14 @@ if __name__ == '__main__':
 	
 	# Create NeoPixel object with appropriate configuration.
 	strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
-    # Intialize the library (must be called once before other functions).
+    	# Intialize the library (must be called once before other functions).
 	strip.begin()	
 	
 	#Save the initial time, we will use this to find out when it is time to take a picture or save a reading
 	last_read_sensor=last_pic_time= int(time.time())
 	try:
 		while True:
-			grovepi.digitalWrite(green_led, 0)
+			grovepi.digitalWrite(green_led, 1)
 			led_strip(strip, 1)
 			print ("LED strip switched on\n")
 			grovepi.digitalWrite(motor,1)
