@@ -173,7 +173,7 @@ nav a:hover
 .ico_categorie
 {
     vertical-align: middle;
-    margin-right: 200px;
+    margin-right: 8px;
 	height: 50px;
 	width: 50px;
 	
@@ -184,18 +184,22 @@ nav a:hover
     display: flex;
 	align-items: center;
     margin-bottom: 20px;
+	box-shadow: 0px 2px 5px #1c1a19;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 0.9em;
+
 }
 
-table, aside
+#h1_aside
 {
-    text-align: justify;
+	text-align: center;
 }
+
 
 table
 {
     margin-right: 20px;
-    flex: 3;
-	
 }
 
 table p
@@ -205,9 +209,9 @@ table p
 
 aside
 {
-    flex: 1.2;
+    flex: 1;
     position: relative;
-    background-color: #DC8240;
+    background-color: #E39949;
     box-shadow: 0px 2px 5px #1c1a19;
     border-radius: 5px;
     padding: 10px;
@@ -217,18 +221,22 @@ aside
 
 #health_status
 {
-    text-align: center;
+	margin : auto;
+	display:flex;
+	padding-bottom: 15px;
 }
 
-#health_status img
-{
 
+#my_buttons
+{
+	margin : auto;
+	display:flex;
 }
 
 .styled {
     border: 0;
     line-height: 2.5;
-    padding: 0 50px;
+    padding: 0 10px;
     font-size: 1rem;
     text-align: center;
     color: #fff;
