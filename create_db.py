@@ -14,7 +14,8 @@ except mariadb.Error as e:
 
 # Instantiate Cursor
 cur = conn.cursor()
-  
+ 
+#### To be translated #####
 CREATE DATABASE happybasil_db;
 USE happybasil_db;
 
@@ -68,7 +69,7 @@ value('date', '0');
 INSERT INTO data
 (variable, value)
 value('time', '0');
-
+######################
 conn.commit()
 
 # Close Connection

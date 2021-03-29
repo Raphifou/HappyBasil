@@ -4,9 +4,9 @@
 #
 # 	https://github.com/raphifou/happybasil
 #
-#	* Py	:   Reads the data from moisture, light, temperature and humidity sensor 
-#				and takes pictures from the Pi camera periodically and logs them
-#	* IoT	: 	All the data are saved in a DB (MariaDB) and sent to a web interface 
+#	*	The script reads periodically the data from moisture, light, temperature and humidity sensor, 
+#		takes pictures from the Pi camera and logs them into a CSV file.
+#		All the data are saved in a database(MariaDB) and sent to a web interface.
 #	* Sensor connections on the GrovePi:
 #			-> Grove Moisture sensor	- Port A1
 #			-> Grove light sensor		- Port A2
@@ -27,7 +27,6 @@ import math
 import sys
 import subprocess
 import argparse
-import datetime
 
 import mariadb
 import grovepi
@@ -48,23 +47,23 @@ blue					= 0
 white 					= 1
 
 #variables
-watered 	= 0
-light_state	= 0
-motor_state	= 0
-mode_state	= 0
-pi_state	= 1
-light 		= 0.0
-temp  		= 0.0
-humidity 	= 0.0
-moisture 	= 0.0
+watered 		= 0
+light_state		= 0
+motor_state		= 0
+mode_state		= 0
+pi_state		= 1
+light 			= 0
+temp  			= 0
+humidity 		= 0
+moisture 		= 0
 
 #timings
 #for debug
-time_for_sensor		= 4		#  4 seconds
-time_for_picture	= 12	# 12 seconds
+#time_for_sensor		= 4		#  4 seconds
+#time_for_picture	= 12	# 12 seconds
 #for script
-#time_for_sensor	= 1*60*60	#1hr
-#time_for_picture	= 8*60*60	#8hr
+time_for_sensor		= 1*60*60	#1hr
+time_for_picture	= 8*60*60	#8hr
 time_to_sleep		= 1
 
 #logfile
@@ -119,7 +118,7 @@ def take_picture():
 		output = process.communicate()[0]
 		print("Picture taken\n------------>\n")
 	except:
-		print("Camera problem,please check the camera connections and settings")
+		print("Camera issue,please check the camera connections and settings")
 		
 ###### TO DO ######
 def auto_mode():
@@ -149,14 +148,14 @@ def auto_mode():
 			watered = False
 			grovepi.digitalWrite(motor,0)
 			
-# Main program logic follows:
+# Main program
 if __name__ == '__main__':
-	print ("***************************\n")
-	print ("**** HapPy Basil V.0.1 ****\n")
-	print ("***************************\n")
+	print ("***************************")
+	print ("**** HapPy Basil V.0.1 ****")
+	print ("***************************")
 	print ("Press Ctrl-C to quit.\n")
 	# Connect to MariaDB Platform
-	print ("Connecting to the database....................")
+	print ("Connecting to the database....................", end = '')
 	try:
 	       conn = mariadb.connect(
 				user=input("Enter your username: "),
@@ -169,86 +168,97 @@ if __name__ == '__main__':
 	except mariadb.Error as e:
 	       print (f"Error connecting to MariaDB Platform: {e}")
 	       sys.exit(1)
-	print ("Done\n")
+	print ("Done")
 	# Get Cursor
 	conn.autocommit = True
 	cur = conn.cursor()
 	#Initialize the database
-	print ("Setting up the database....................")
+	print ("Setting up the database....................", end = '')
 	cur.execute("UPDATE data SET value = '0'")
 	cur.execute("UPDATE data SET value = %s WHERE variable = %s ", ("1","pi_state"))
 	#conn.commit() 
-	print ("Done\n")
+	print ("Done")
 	       
 	# Create NeoPixel object with appropriate configuration.
-	print ("Setting up the LEDs....................")
+	print ("Setting up the LEDs....................", end = '')
 	strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
 	# Intialize the library (must be called once before other functions).
 	strip.begin()	
-	print ("Done\n")
+	print ("Done")
 	       
 	#Save the initial time, we will use this to find out when it is time to take a picture or save a reading
 	last_read_sensor=last_pic_time= int(time.time())
-	print ("****HapPy Basil is now read !****\n")
+	print ("****HapPy Basil is now ready !****\n")
 	       
 	#Main loop
 	try:
 		while True:
-			curr_time_sec=int(time.time()) #
+			curr_time_sec=int(time.time()) # Current time
 			grovepi.digitalWrite(green_led, 1) #I am alive ;)
 			
-			#Read the database
-			#data = []
+			#Read the database and update the variables
 			cur.execute("SELECT value FROM data")
 			data = cur.fetchall()
-			#print(data)
-			data=[i[0] for i in data]
+			data = [i[0] for i in data]
 			print (data)
 			light_state = data[0]
-			print(light_state)
-			#Data
+			motor_state = data[1]
+			mode_state 	= data[2]
+			pi_state	= data[3]
+			
+			#Test the state variables
+			# LED
+			if (light_state == "1"):
+				#Switch on the LED strip
+				print ("LED strip switched on")
+				led_strip(strip, 1)
+			elif (light_state == "0"):
+				#Switch off the LED strip
+				print("LED strip switched off\n")
+				led_strip(strip, 0)
+				
+			# Pump	
+			if (motor_state == "1"):
+				#turn on motor
+				print ("Pump turned on\n")
+				grovepi.digitalWrite(motor,1)
+			elif (motor_state == 0):
+				#turn off motor
+				print("Pump turned off\n")
+				grovepi.digitalWrite(motor,0)
+
+			# Mode
+			if (mode_state == "1"):
+				auto_mode()
+				print ("HapPy Basil is now in auto mode !\n")
+			elif (mode_state == "0"):
+				print("HapPy Basil is now in manual mode !\n")
+
+			#System
 			if (pi_state == "0"):
 				led_strip(strip, 0)
 				grovepi.digitalWrite(green_led, 0)
 				grovepi.digitalWrite(motor,0)
+				print("\nHapPy Basil turned off !")
 				break
-				#To be UPDATED !!!
-			#LED
-			if (light_state == "1"):
-				#switch on the LED strip
-				print ("LED strip switched on\n")
-				led_strip(strip, 1)
-			elif (light_state == "0"):
-				#switch off the LED strip
-				print("LED strip switched off\n")
-				led_strip(strip, 0)
-			#Motor	
-			if (motor_state == "1"):
-				#turn on motor
-				print ("Motor turned on\n")
-				grovepi.digitalWrite(motor,1)
-			elif (motor_state == 0):
-				#turn off motor
-				print("Motor turned off\n")
-				grovepi.digitalWrite(motor,0)
-				
+
+			# Sensors
 			# If it is time to take the sensor reading
 			if curr_time_sec-last_read_sensor>time_for_sensor:
 				#Sensor reading and variables updating
 				[light,temp,humidity,moisture]=read_sensor()
 				light = 100*light/1023
-				moisture = 100*moisture/1023
+				moisture = 100*moisture/1023 #To be checked
 				print("Updating data...\n")
 				# If any reading is a bad reading, skip the loop and try again
-				if moisture==-1:
+				if moisture == -1:
 					print("Bad reading")
 					time.sleep(1)
 					continue
+				# What time is it ?
 				curr_time = time.strftime("%d/%m/%Y-%H:%M:%S")
 				print(("Time:%s\nMoisture: %d %%\nLight: %d\nTemp: %.2f\nHumidity:%.2f %%\n" %(curr_time,moisture,light,temp,humidity)))
-				#####################
-				#Updating the database#
-				#####################
+				# Update the database
 				light = str(light)
 				light = light[:4]
 				moisture = str(moisture)
@@ -261,27 +271,21 @@ if __name__ == '__main__':
 				cur.execute("UPDATE data SET value=%s WHERE variable=%s",(moisture, "moisture"))
 				cur.execute("UPDATE data SET value=%s WHERE variable=%s",(mydate, "date"))
 				cur.execute("UPDATE data SET value=%s WHERE variable=%s",(mytime, "time"))
-				print ("Database updated !\n")
+				print ("Database updated !")
 				# Save the sensors value in a CSV file
 				f=open(log_file,'a')
 				f.write("%s,%s,%d,%d,%s;\n" %(curr_time,light,temp,humidity,moisture))
 				f.close()
 				print("Logfile updated at %s \n" % curr_time)
-				
 				#Update the last read time
 				last_read_sensor=curr_time_sec		
-
+			
+			# Picture
 			# If it is time to take the picture
 			if curr_time_sec-last_pic_time > time_for_picture:
 				take_picture()
 				last_pic_time = curr_time_sec
 
-			#Check the mode_state value
-			if (mode_state == "1"):
-				auto_mode()
-				print ("HapPy Basil is now in auto mode !\n")
-			elif (mode_state == "0"):
-				print("HapPy Basil is now in manual mode !\n")
 			#Slow down the loop
 			time.sleep(time_to_sleep)
 			

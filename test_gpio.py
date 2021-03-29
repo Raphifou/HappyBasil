@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
+#
+# Use this script to test your hardware
+# Requirements: GrovePi sensors, PiCamera, LED strip
+#
 #CONNECTIONS:
 #	*	Sensor Connections on the GrovePi:
 #			-> Grove Moisture sensor	- Port A1
 #			-> Grove light sensor		- Port A2
 #			-> Grove DHT sensors		- Port D2
 #			-> Relay			- Port D4
-#	*	LED strip
+#	*	GPIO connections:
 #			-> LED strip			- GPIO 18
 # NOTE:
 #	*	Make sure that the Pi camera is enabled and works. Directions here: https://www.raspberrypi.org/help/camera-module-setup/
@@ -21,21 +25,20 @@ import grovepi
 from rpi_ws281x  import *
 
 #analog sensor port number
-moisture_sensor		= 1
-light_sensor		= 2
+moisture_sensor			= 1
+light_sensor			= 2
 
 #digital sensor
 temp_humidity_sensor	= 2
-motor			= 4
-green_led		= 3
+motor					= 4
+green_led				= 3
 
 #temp_humidity_sensor type
 blue			= 0
 white 			= 1
 
 #loop
-time_to_sleep		= 1
-
+time_to_sleep	= 1
 
 # LED strip configuration:
 LED_COUNT      = 60      # Number of LED pixels.
@@ -86,15 +89,14 @@ def take_picture():
 		output = process.communicate()[0]
 		print("Picture taken\n------------>\n")
 	except:
-		print("Camera problem,please check the camera connections and settings")
-		
+		print("Camera problem,please check the camera connections and settings")		
 
 if __name__ == '__main__':
+	print 
 	print ('Press Ctrl-C to quit.')
-	
 	# Create NeoPixel object with appropriate configuration.
 	strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
-    	# Intialize the library (must be called once before other functions).
+	# Intialize the library (must be called once before other functions).
 	strip.begin()	
 	
 	#Save the initial time, we will use this to find out when it is time to take a picture or save a reading
@@ -105,11 +107,11 @@ if __name__ == '__main__':
 			led_strip(strip, 1)
 			print ("LED strip switched on\n")
 			grovepi.digitalWrite(motor,1)
-			print ("Motor turned on\n")
+			print ("Pump turned on")
 			take_picture()
 			print ("Picture taken\n")
 			[moisture,light,temp,humidity]=read_sensor()
-			print("***DATA***\nMoisture: %d\nLight: %d\nTemp: %.2f\nHumidity:%.2f %%\n" %(moisture,light,temp,humidity))
+			print("***SENSORS***\nMoisture: %d\nLight: %d\nTemp: %.2f\nHumidity:%.2f %%\n" %(moisture,light,temp,humidity))
 			
 	except KeyboardInterrupt:
 		print("\nSystem stopped\n")
