@@ -1,21 +1,24 @@
 #!/usr/bin/env python3
 #
-#	HapPy Basil V0.1
-#	* Py :	Reads the data from moisture, light, temperature and humidity sensor 
-#		and takes pictures from the Pi camera periodically and logs them
-#	* IoT: All the data are saved in a DB and sent to a web interface
-#	*	Sensor Connections on the GrovePi:
+#				**********HapPy Basil V0.1**********
+#
+# 	https://github.com/raphifou/happybasil
+#
+#	* Py	:   Reads the data from moisture, light, temperature and humidity sensor 
+#				and takes pictures from the Pi camera periodically and logs them
+#	* IoT	: 	All the data are saved in a DB (MariaDB) and sent to a web interface 
+#	* Sensor connections on the GrovePi:
 #			-> Grove Moisture sensor	- Port A1
 #			-> Grove light sensor		- Port A2
 #			-> Grove DHT sensors		- Port D2
-#	* Pump and LED strip are connected :AUTO / MANUAL mode are availables
-#			-> LED strip				- GPIO 18
-#	*	Sensor Connections on the GrovePi:
 #			-> Relay					- Port D4
+#	* GPIO connections :
+#			-> LED strip				- GPIO 18
+#			
 # NOTE:
-#	*	Make sure that the Pi camera is enabled and works. Directions here: https://www.raspberrypi.org/help/camera-module-setup/
-#	
-# The GrovePi connects the Raspberry Pi and Grove sensors.  You can learn more about GrovePi here:  http://www.dexterindustries.com/GrovePi
+#	* Make sure that your database is created and connected
+#	* Make sure that the Pi camera is enabled and works. Directions here: https://www.raspberrypi.org/help/camera-module-setup/
+# 	* The GrovePi connects the Raspberry Pi and Grove sensors.  You can learn more about GrovePi here:  http://www.dexterindustries.com/GrovePi
 #
 #
 import os
@@ -32,17 +35,17 @@ from rpi_ws281x import *
 from getpass import getpass
 
 #analog sensor port number
-moisture_sensor		= 1
-light_sensor		= 2
+moisture_sensor			= 1
+light_sensor			= 2
 
 #digital sensor
 temp_humidity_sensor	= 2
-motor			= 4
-green_led		= 3
+motor					= 4
+green_led				= 3
 
 #temp_humidity_sensor type
-blue			= 0
-white 			= 1
+blue					= 0
+white 					= 1
 
 #variables
 watered 	= 0
@@ -57,7 +60,7 @@ moisture 	= 0.0
 
 #timings
 #for debug
-time_for_sensor		= 4	#  4 seconds
+time_for_sensor		= 4		#  4 seconds
 time_for_picture	= 12	# 12 seconds
 #for script
 #time_for_sensor	= 1*60*60	#1hr
@@ -85,7 +88,7 @@ def led_strip(strip, LED):
 			if i%2 == 0:
 				strip.setPixelColor(i, Color(0, 0, 255))
 			else:
-				strip.setPixelColor(i, Color(0, 255, 0))
+				strip.setPixelColor(i, Color(255, 0, 0))
 			strip.show()
 	elif LED == 0:
 		#print("LED OFF")
@@ -154,8 +157,6 @@ if __name__ == '__main__':
 	print ("Press Ctrl-C to quit.\n")
 	# Connect to MariaDB Platform
 	print ("Connecting to the database....................")
-	#username = os.environ.get("username")
-	#password = os.environ.get("password")
 	try:
 	       conn = mariadb.connect(
 				user=input("Enter your username: "),
@@ -236,7 +237,7 @@ if __name__ == '__main__':
 				#Sensor reading and variables updating
 				[light,temp,humidity,moisture]=read_sensor()
 				light = 100*light/1023
-				moisture = 100 - (100*moisture/1023)
+				moisture = 100*moisture/1023
 				print("Updating data...\n")
 				# If any reading is a bad reading, skip the loop and try again
 				if moisture==-1:
@@ -244,7 +245,7 @@ if __name__ == '__main__':
 					time.sleep(1)
 					continue
 				curr_time = time.strftime("%d/%m/%Y-%H:%M:%S")
-				print(("Time:%s\nMoisture: %d\nLight: %d\nTemp: %.2f\nHumidity:%.2f %%\n" %(curr_time,moisture,light,temp,humidity)))
+				print(("Time:%s\nMoisture: %d %%\nLight: %d\nTemp: %.2f\nHumidity:%.2f %%\n" %(curr_time,moisture,light,temp,humidity)))
 				#####################
 				#Updating the database#
 				#####################
