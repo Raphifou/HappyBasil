@@ -123,30 +123,36 @@ def take_picture():
 ###### TO DO ######
 def auto_mode():
     #If the time is in between an interval of +- 15 mins, while the moisture level < thresh keep motor running, else turn off motor
-	thresh = 30
+	thresh = 30.00
 	global watered
 	print ("Watered?", watered)
-	my_time = datetime.now().strftime("%H:%M") #TO BE UPDATED
+	my_time = time.strftime("%H:%M")
 	print ("current time", my_time)
 	#FLAG IS REQUIRED
-	if ((my_time > "10:00") and (my_time < "20:00")):
-		led_strip(strip, 1)
+	if ((my_time > "8:00") and (my_time < "20:00")):
+		#led_strip(strip, 1)
+		cur.execute("UPDATE data SET value=%s WHERE variable=%s",("1", "light_state"))
 	else:
-		led_strip(strip, 0)
+		#led_strip(strip, 0)
+		cur.execute("UPDATE data SET value=%s WHERE variable=%s",("0", "light_state"))
 	if (((my_time > "19:45") and (my_time < "20:40")) or ((my_time > "3:45") and (my_time < "4:15"))):
 		if not watered:
 			while True:
 				moisture = grovepi.analogRead(moisture_sensor)
-				moisture = 100 - (100*moisture/1023)
+				moisture = 100 ( 100*moisture/1023) #Dryness
 				if (moisture > thresh):
-					grovepi.digitalWrite(motor, 0)
+					#grovepi.digitalWrite(motor, 0)
+					cur.execute("UPDATE data SET value=%s WHERE variable=%s",("0", "motor_state"))
 					watered = True
+					cur.execute("UPDATE data SET value=%s WHERE variable=%s",("1", "watered"))
 					break
 				else:
-					grovepi.digitalWrite(motor,1)
+					#grovepi.digitalWrite(motor,1)
+					cur.execute("UPDATE data SET value=%s WHERE variable=%s",("1", "motor_state"))
 		else:
 			watered = False
-			grovepi.digitalWrite(motor,0)
+			#grovepi.digitalWrite(motor,0)
+			cur.execute("UPDATE data SET value=%s WHERE variable=%s",("0", "motor_state"))
 			
 # Main program
 if __name__ == '__main__':
