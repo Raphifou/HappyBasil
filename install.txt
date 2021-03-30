@@ -1,6 +1,9 @@
 Raspberry UPDATE/UPGRADE
 
 LED
+sudo apt-get install gcc make build-essential python-dev git scons swig
+sudo nano /etc/modprobe.d/snd-blacklist.conf --EDIT--  blacklist snd_bcm2835
+sudo nano /boot/config.txt   --COMMENT #-- dtparam=audio=on
 git clone https://github.com/jgarff/rpi_ws281x
 cd rpi_ws281x/
 sudo scons
@@ -20,22 +23,9 @@ DB
 CREATE DATABASE happybasil_db;
 USE happybasil_db;
 
-CREATE TABLE data (
-variables CHAR(20),
-value CHAR(20)
-);
-
-DESCRIBE data;
-
-INSERT INTO data
-(variables, value)
-value('light_state', '0');
-...
-...
-
 PYTHON CONNECTOR
-sudo apt-get install ca-certificates
-sudo apt-get instal apt-transport-https
-curl -LsS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash ???
+# sudo apt-get install ca-certificates
+# sudo apt-get instal apt-transport-https
+# curl -LsS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash
 sudo apt install libmariadb3 libmariadb-dev
 sudo pip3 install mariadb
