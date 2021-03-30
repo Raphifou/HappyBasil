@@ -161,11 +161,11 @@ if __name__ == '__main__':
 	print ("***************************")
 	print ("Press Ctrl-C to quit.\n")
 	# Connect to MariaDB Platform
-	print ("Connecting to the database....................", end = '')
+	print ("Connecting to the database....................")
 	try:
 	       conn = mariadb.connect(
 				user=input("Enter your username: "),
-				password=getpass("Enter your username: "),
+				password=getpass("Enter your password: "),
 		        host="localhost",
 		        port=3306,
 		        database="happybasil_db",
@@ -266,9 +266,9 @@ if __name__ == '__main__':
 				print(("Time:%s\nMoisture: %d %%\nLight: %d\nTemp: %.2f\nHumidity:%.2f %%\n" %(curr_time,moisture,light,temp,humidity)))
 				# Update the database
 				light = str(light)
-				light = light[:4]
+				light = light[:2]
 				moisture = str(moisture)
-				moisture = moisture[:4]
+				moisture = moisture[:2]
 				mydate = time.strftime("%d/%m/%Y")
 				mytime = time.strftime("%H:%M:%S")
 				cur.execute("UPDATE data SET value=%s WHERE variable=%s",(light, "light"))
