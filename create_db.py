@@ -15,19 +15,19 @@ except mariadb.Error as e:
 # Instantiate Cursor
 cur = conn.cursor()
  
-#### To be translated #####
+#### To be translated in Python #####
 CREATE DATABASE happybasil_db;
 USE happybasil_db;
 
 CREATE TABLE data (
-variables CHAR(20),
+variable CHAR(20),
 value CHAR(20)
 );
 
 DESCRIBE data;
 
 INSERT INTO data
-(variables, value)
+(variable, value)
 value('light_state', '0');
 
 INSERT INTO data
