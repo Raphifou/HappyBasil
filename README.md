@@ -16,14 +16,15 @@ Feel free to visit their amazing work:
 
 And this tutorial from Instructable was a source of inspiration as well: https://www.instructables.com/Raspberry-Pi-Powered-IOT-Garden/
 
-How to install the HapPy Basil smart garden:
+How to install the HapPy Basil smart garden: (maybe I can create a bash script to automatize all that stuff?)
 1) Install Raspbian
 2) Update the RaspberryPi: sudo apt-get update | sudo apt-get upgrade
 3) Install the LAMP server package: sudo apt install apache2 php libapache2-mod-php mariadb-server php-mysql
 4) Set up an apache2 web server
 5) Set up the MariaDB database
-6) Launch the create_db.py
-7) PHP script and web interface UNDER DEV.
+6) Install the MariaDB Python Connector :  sudo apt install libmariadb3 libmariadb-dev | sudo pip3 install mariad
+7) Launch the create_db.py
+8) PHP script and web interface UNDER DEV.
 
 
 /!\ This project works in local ! I am a complete beginner regarding web server development and network security. So, if you want to expand you HapPy Basil in the world wide web make sure to securise your web server /!\
