@@ -13,6 +13,10 @@ sudo python3 setup.py build
 sudo python3 setup.py install 
 sudo pip3 install adafruit-circuitpython-neopixel
 
+# I have never tried but this should work too. Do not forget to disable the audio
+# git clone http://github.com/richardghirst/rpi_ws281x
+# sudo pip install rpi_ws281x
+
 GrovePi
 sudo curl -kL dexterindustries.com/update_grovepi | bash -s -- --bypass-gui-installation
 
