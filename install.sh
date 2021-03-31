@@ -1,3 +1,4 @@
+### To be translated in bash ####
 Raspberry UPDATE/UPGRADE
 
 LED
@@ -19,13 +20,13 @@ WEB
 sudo apt install apache2 php libapache2-mod-php mariadb-server php-mysql
 sudo apt install php-curl php-gd php-intl php-json php-mbstring php-xml php-zip
 
-DB
-CREATE DATABASE happybasil_db;
-USE happybasil_db;
-
 PYTHON CONNECTOR
 # sudo apt-get install ca-certificates
 # sudo apt-get instal apt-transport-https
 # curl -LsS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash
 sudo apt install libmariadb3 libmariadb-dev
 sudo pip3 install mariadb
+
+DB
+CREATE DATABASE happybasil_db;
+USE happybasil_db;
