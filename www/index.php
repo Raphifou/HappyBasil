@@ -10,7 +10,7 @@
     <body>
 	
 	<?php
-		$config = parse_ini_file('/var/www/html/www.happybasil.com/database.ini');
+		$config = parse_ini_file('/var/www/html/www.happybasil.com/private/database.ini');
 		$conn = mysqli_connect($config['hostname'],$config['username'],$config['password'],$config['database']);;
 		if (! $conn) {
 		  die("Failed to connect to database : " . $conn ->connect_error);
