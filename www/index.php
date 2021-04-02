@@ -13,7 +13,7 @@
 
 		$hostname = "localhost";
 		$username = "root";
-		$password = "g8aXq8EN;";
+		$password = "xxxxxx";
 		$db = "happybasil_db";
 
 		$conn =mysqli_connect($hostname,$username,$password,$db);
