@@ -34,17 +34,17 @@ from rpi_ws281x import *
 from getpass import getpass
 
 #analog sensor port number
-moisture_sensor			= 1
-light_sensor			= 2
+moisture_sensor		= 1
+light_sensor		= 2
 
 #digital sensor
 temp_humidity_sensor	= 2
-motor					= 4
-green_led				= 3
+motor			= 4
+green_led		= 3
 
 #temp_humidity_sensor type
-blue					= 0
-white 					= 1
+blue			= 0
+white 			= 1
 
 #variables
 watered 		= 0
@@ -59,7 +59,7 @@ moisture 		= 0
 
 #timings
 #for debug
-#time_for_sensor		= 4		#  4 seconds
+#=time_for_sensor		= 4		#  4 seconds
 #time_for_picture	= 12	# 12 seconds
 #for script
 time_for_sensor		= 1*60*60	#1hr
@@ -101,7 +101,7 @@ def read_sensor():
 		print("Reading sensors...\n")
 		moisture=grovepi.analogRead(moisture_sensor)
 		light=grovepi.analogRead(light_sensor)
-		[temp,humidity] = grovepi.dht(temp_humidity_sensor,blue)
+		[temp,humidity] = grovepi.dht(temp_humidity_sensor,white)
 		#Return -1 in case of bad temp/humidity sensor reading
 		if math.isnan(temp) or math.isnan(humidity):		#temp/humidity sensor sometimes gives nan
 			return [-1,-1,-1,-1]
@@ -203,13 +203,13 @@ if __name__ == '__main__':
 			grovepi.digitalWrite(green_led, 1) #I am alive ;)
 			
 			#Read the database and update the variables
-			cur.execute("SELECT value FROM data")
+			cur.execute("SELECT value FROM data LIMIT 4")
 			data = cur.fetchall()
 			data = [i[0] for i in data]
-			print (data)
-			light_state = data[0]
-			motor_state = data[1]
-			mode_state 	= data[2]
+			#print (data)
+			light_state	= data[0]
+			motor_state	= data[1]
+			mode_state	= data[2]
 			pi_state	= data[3]
 			
 			#Test the state variables
@@ -253,8 +253,8 @@ if __name__ == '__main__':
 			if curr_time_sec-last_read_sensor>time_for_sensor:
 				#Sensor reading and variables updating
 				[light,temp,humidity,moisture]=read_sensor()
-				light = 100*light/1023
-				moisture = 100*moisture/1023 #To be checked
+				light = 100 * light / 1023
+				moisture = 100 * moisture / 1023 
 				print("Updating data...\n")
 				# If any reading is a bad reading, skip the loop and try again
 				if moisture == -1:
@@ -266,9 +266,9 @@ if __name__ == '__main__':
 				print(("Time:%s\nMoisture: %d %%\nLight: %d\nTemp: %.2f\nHumidity:%.2f %%\n" %(curr_time,moisture,light,temp,humidity)))
 				# Update the database
 				light = str(light)
-				light = light[:2]
+				light = light[:5]
 				moisture = str(moisture)
-				moisture = moisture[:2]
+				moisture = moisture[:5]
 				mydate = time.strftime("%d/%m/%Y")
 				mytime = time.strftime("%H:%M:%S")
 				cur.execute("UPDATE data SET value=%s WHERE variable=%s",(light, "light"))
