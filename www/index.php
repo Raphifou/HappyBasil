@@ -11,17 +11,17 @@
 	
 	<?php
 
-		$hostname = "192.168.0.23";
-		$username = "happybasil";
+		$hostname = "localhost";
+		$username = "root";
 		$password = "g8aXq8EN;";
-		$db = "data";
+		$db = "happybasil_db";
 
-		$dbconnect=mysqli_connect($hostname,$username,$password,$db);
+		$conn =mysqli_connect($hostname,$username,$password,$db);
 
-		if ($dbconnect->connect_error) {
-		  die("Database connection failed: " . $dbconnect->connect_error);
+		if (! $conn) {
+		  die("Database connection failed : " . $conn ->connect_error);
 		}
-
+        //echo 'Successfully connected!';
 	?>
 	
         <div id="bloc_page">
@@ -36,7 +36,7 @@
                 
                 <nav>
                     <ul>
-                        <li><a href="index.html">Home</a></li>
+                        <li><a href="index.php">Home</a></li>
                         <li><a href="#">Graphs</a></li>
                         <li><a href="https://github.com/Raphifou/HappyBasil">Download</a></li>
                     </ul>
@@ -59,39 +59,49 @@
             <div id = "garden_status">
 				
                 <table>
-						<tr>
+                    <tr>
 						<td id="light">
-							<p><img src="images/sun.png" alt="Sun" /> Luminosity: ?</p>
+							<!--<p><img src="images/sun.png" alt="Sun" /> Luminosity:</p>-->
+                            <?php
+                                $query = "SELECT value FROM data WHERE variable = 'light' LIMIT 1";
+                                $result = mysqli_query($conn,$query);
+                                $row = mysqli_fetch_array($result);
+                                echo"<p><img src=\"images/sun.png\" alt=\"Sun\" /> Luminosity: {$row[0]}% </p>";
+                            ?>
 						</td>
 						<td id="temp">
-							<p><img src="images/thermo.png" alt="Thermometer" /> Temperature: ?</p>
+							<!--<p><img src="images/thermo.png" alt="Thermometer" /> Temperature: ?</p>-->
+                            <?php
+                                $query = "SELECT value FROM data WHERE variable = 'temp' LIMIT 1";
+                                $result = mysqli_query($conn,$query);
+                                $row = mysqli_fetch_array($result);
+                                echo"<p><img src=\"images/thermo.png\" alt=\"Thermometer\" /> Temperature: {$row[0]}°C </p>";
+                            ?>
 						</td>
 						</tr>
 						<tr>
 						<td id="humidity">
-							<p><img src="images/fog.png" alt="Fog" /> Humidity: ?</p>
+							<!--<p><img src="images/fog.png" alt="Fog" /> Humidity: ?</p>-->
+                            <?php
+                                $query = "SELECT value FROM data WHERE variable = 'humidity' LIMIT 1";
+                                $result = mysqli_query($conn,$query);
+                                $row = mysqli_fetch_array($result);
+                                echo"<p><img src=\"images/fog.png\" alt=\"Fog\" /> Humidity {$row[0]}% </p>";
+                            ?>
 						</td>
 						<td id="moisture">
-							<p><img src="images/humidity.png" alt="Drop" /> Moisture: ?</p>
+							<!--<p><img src="images/humidity.png" alt="Drop" /> Moisture: ?</p>-->
+                            <?php
+                                $query = "SELECT value FROM data WHERE variable = 'moisture' LIMIT 1";
+                                $result = mysqli_query($conn,$query);
+                                $row = mysqli_fetch_array($result);
+                                echo"<p><img src=\"images/humidity.png\" alt=\"Drop\" /> Moisture {$row[0]}% </p>";
+                            ?>
 						</td>
-						</tr>
-						<?php
-
-						$query = mysqli_query($dbconnect, "SELECT * FROM user_review")
-						   or die (mysqli_error($dbconnect));
-
-						while ($row = mysqli_fetch_array($query)) {
-						  echo
-						   "<tr>
-							<td>{$row['light']}</td>
-							<td>{$row['temp']}</td>
-							</tr>
-							<tr>
-							<td>{$row['humidity']}</td>
-							<td>{$row['temp']}</td>
-						   </tr>\n";
-						}
-						?>
+                    </tr>
+                    <?php
+                        mysqli_close($conn);
+                    ?>
                 </table>
 				<aside>
 					<h1 id = "h1_aside">Garden Status & Control Panel</h1>
@@ -135,5 +145,6 @@
                 </div>
             </footer>
         </div>
+        
     </body>
 </html>
