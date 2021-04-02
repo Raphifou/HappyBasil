@@ -10,16 +10,10 @@
     <body>
 	
 	<?php
-
-		$hostname = "localhost";
-		$username = "root";
-		$password = "xxxxxx";
-		$db = "happybasil_db";
-
-		$conn =mysqli_connect($hostname,$username,$password,$db);
-
+		$config = parse_ini_file('/var/www/html/www.happybasil.com/database.ini');
+		$conn = mysqli_connect($config['hostname'],$config['username'],$config['password'],$config['database']);;
 		if (! $conn) {
-		  die("Database connection failed : " . $conn ->connect_error);
+		  die("Failed to connect to database : " . $conn ->connect_error);
 		}
         //echo 'Successfully connected!';
 	?>
@@ -50,7 +44,7 @@
                     <li>LIGHT 	: 	? </a></li>
                     <li>PUMP 	:  	? </a></li>
                     
-                    <a href="#" class="bouton_rouge">Update data <img src="images/flecheblanchedroite.png" alt="" /></a>
+                    <a href="index.php" class="bouton_rouge">Update data <img src="images/flecheblanchedroite.png" alt="" /></a>
                 </div>
             </div>
 			
@@ -99,9 +93,6 @@
                             ?>
 						</td>
                     </tr>
-                    <?php
-                        mysqli_close($conn);
-                    ?>
                 </table>
 				<aside>
 					<h1 id = "h1_aside">Garden Status & Control Panel</h1>
@@ -145,6 +136,8 @@
                 </div>
             </footer>
         </div>
-        
+        <?php
+            mysqli_close($conn);
+         ?>        
     </body>
 </html>
